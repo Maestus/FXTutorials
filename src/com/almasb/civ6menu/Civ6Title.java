@@ -19,9 +19,9 @@ public class Civ6Title extends Pane {
         }
 
         text = new Text(spread);
-        text.setFont(Font.loadFont(Civ6MenuApp.class.getResource("res/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 48));
-        text.setFill(Color.WHITE);
-        text.setEffect(new DropShadow(30, Color.BLACK));
+        text.setFont(Font.loadFont(Civ6MenuApp.class.getResource("res/discoduckchromeital.ttf").toExternalForm(), 74));
+        text.setFill(Color.rgb(255, 180, 67));
+        //text.setEffect(new DropShadow(15, Color.RED));
 
         getChildren().addAll(text);
     }
