@@ -31,8 +31,4 @@ public class Civ6MenuItem extends Pane {
         getChildren().addAll(text);
     }
 
-    public void setOnAction(Runnable action) {
-        setOnMouseClicked(e -> action.run());
-        System.out.println("lmzl");
-    }
 }

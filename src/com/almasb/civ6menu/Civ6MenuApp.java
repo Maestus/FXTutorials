@@ -1,45 +1,43 @@
 package com.almasb.civ6menu;
 
-import javafx.animation.*;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.util.Pair;
 
-import java.util.Arrays;
-import java.util.List;
+import javafx.util.Duration;
+import java.util.ArrayList;
 
 public class Civ6MenuApp extends Application {
 
-    private static final int WIDTH = 1280;
-    private static final int HEIGHT = 720;
+    protected static final int WIDTH = 1280;
+    protected static final int HEIGHT = 720;
+    double lineX = WIDTH / 2 - 100;
+    double lineY = HEIGHT / 3 + 50;
+    boolean menuBox_already_add_in_pane = false;
 
-    private List<Pair<String, Runnable>> menuData = Arrays.asList(
-            new Pair<String, Runnable>("Single Player", () -> {}),
-            new Pair<String, Runnable>("Game Options", launch_setting()),
-            new Pair<String, Runnable>("Credits", () -> {}),
-            new Pair<String, Runnable>("Exit", Platform::exit)
-    );
-
-    private Pane root = new Pane();
-    private VBox menuBox = new VBox();
-    private Line line;
-
-
-    private void addBackground() {
+    
+    protected Pane root = new Pane();
+    protected Setting key_choose = new Setting();
+    protected VBox menuBox = new VBox();
+    protected Line line;
+    protected SettingMenu setting;
+    
+    protected ArrayList<String> menuData = new ArrayList<>();
+ 
+    
+    protected void addBackground() {
         ImageView imageView = new ImageView(new Image(getClass().getResource("res/bg.png").toExternalForm()));
         imageView.setFitWidth(WIDTH);
         imageView.setFitHeight(HEIGHT);
@@ -47,13 +45,7 @@ public class Civ6MenuApp extends Application {
         root.getChildren().add(imageView);
     }
 
-    private Runnable launch_setting() {
-
-    	
-    	return null;
-	}
-
-	private void addTitle() {
+	protected void addTitle() {
         Civ6Title title = new Civ6Title("FxBattle");
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3);
@@ -61,8 +53,8 @@ public class Civ6MenuApp extends Application {
         root.getChildren().add(title);
     }
 
-    private void addLine(double x, double y) {
-        line = new Line(x, y, x, y + 200);
+    protected void addLine(double x, double y) {
+        line = new Line(x, y, x, y + 250);
         line.setStrokeWidth(1);
         line.setStroke(Color.WHITE);
         line.setScaleY(0);
@@ -70,7 +62,8 @@ public class Civ6MenuApp extends Application {
         root.getChildren().add(line);
     }
 
-    private void startAnimation() {
+    protected void startAnimation() {
+		line.setEndY(line.getEndY() - 100);
     	ParallelTransition deploy = new ParallelTransition();
         TranslateTransition menuitems[] = new TranslateTransition[menuBox.getChildren().size()];
         ScaleTransition barre = new ScaleTransition(Duration.seconds(1), line);
@@ -80,7 +73,6 @@ public class Civ6MenuApp extends Application {
             Node n = menuBox.getChildren().get(i);
             menuitems[i] = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
             menuitems[i].setToX(0);
-            menuitems[i].setOnFinished(e2 -> n.setClip(null));
         }
         
         deploy.getChildren().add(barre);
@@ -90,34 +82,47 @@ public class Civ6MenuApp extends Application {
         deploy.play();
     }
 
-    private void addMenu(double x, double y) {
+    protected void addMenu(double x, double y) {
         menuBox.setTranslateX(x);
         menuBox.setTranslateY(y);
+
         menuData.forEach(data -> {
-            Civ6MenuItem item = new Civ6MenuItem(data.getKey());
-            item.setOnAction(data.getValue());
+            Civ6MenuItem item = new Civ6MenuItem(data);
+            if(data.equals("Game Options")){
+                item.setOnMouseClicked(e -> setting.init());
+            } else if(data.equals("Exit")){
+                item.setOnMouseClicked(e -> Platform.exit());
+            }
+
             item.setTranslateX(200);
             
             VBox.setMargin(item, new Insets(10,1,10,1));
             
             menuBox.getChildren().addAll(item);
         });
-
-        root.getChildren().add(menuBox);
+		if(!menuBox_already_add_in_pane){
+        	root.getChildren().add(menuBox);
+        	menuBox_already_add_in_pane = true;
+		}
+        startAnimation();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        menuData.add("Play");
+        menuData.add("Game Options");
+        menuData.add("Exit");
+        
     	addBackground();
         addTitle();
-
-        double lineX = WIDTH / 2 - 100;
-        double lineY = HEIGHT / 3 + 50;
 
         addLine(lineX, lineY);
         addMenu(lineX + 5, lineY + 5);
 
-        startAnimation();
+        setting = new SettingMenu(this);
+
+        
+        
         Scene scene = new Scene(root);
         primaryStage.setTitle("FxBattle");
         primaryStage.setScene(scene);
