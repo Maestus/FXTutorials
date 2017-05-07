@@ -9,9 +9,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-/**
- * @author Almas Baimagambetov (almaslvl@gmail.com)
- */
 public class Civ6MenuItem extends Pane {
     protected Text text;
 

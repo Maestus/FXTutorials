@@ -29,7 +29,6 @@ public class Civ6MenuApp extends Application {
 
     
     protected Pane root = new Pane();
-    protected Setting key_choose = new Setting();
     protected VBox menuBox = new VBox();
     protected Line line;
     protected SettingMenu setting;
@@ -54,7 +53,7 @@ public class Civ6MenuApp extends Application {
     }
 
     protected void addLine(double x, double y) {
-        line = new Line(x, y, x, y + 250);
+        line = new Line(x, y, x, y + 350);
         line.setStrokeWidth(1);
         line.setStroke(Color.WHITE);
         line.setScaleY(0);
@@ -63,7 +62,7 @@ public class Civ6MenuApp extends Application {
     }
 
     protected void startAnimation() {
-		line.setEndY(line.getEndY() - 100);
+		line.setEndY(line.getEndY() - 200);
     	ParallelTransition deploy = new ParallelTransition();
         TranslateTransition menuitems[] = new TranslateTransition[menuBox.getChildren().size()];
         ScaleTransition barre = new ScaleTransition(Duration.seconds(1), line);

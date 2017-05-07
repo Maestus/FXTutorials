@@ -17,7 +17,9 @@ public class SettingMenu {
     VBox menuBox;
     Civ6MenuApp menu;
     protected ArrayList<String> settingData = new ArrayList<>();
-
+    SettingItem items[] = new SettingItem[5];
+    
+    
 	public SettingMenu(Civ6MenuApp _menu){
 		menu = _menu;
 		menuBox = menu.menuBox;
@@ -26,6 +28,8 @@ public class SettingMenu {
 		settingData.add("Bas");
 		settingData.add("Gauche");
 		settingData.add("Droite");
+		settingData.add("Attaque");
+		settingData.add("Valider");
 		settingData.add("Retour");
 	}
 	
@@ -75,28 +79,52 @@ public class SettingMenu {
 	 protected void addMenu(double x, double y) {
 		 menuBox.setTranslateX(x);
 		 menuBox.setTranslateY(y);
-		 settingData.forEach(data -> {
-			 if(!data.equals("Retour")){
-				 SettingItem item = new SettingItem(data);
-				 item.setTranslateX(200);		            
-				 VBox.setMargin(item, new Insets(10,1,10,1));
+		 
+		 for (int i = 0; i < settingData.size(); i++) {
+			 if(!settingData.get(i).equals("Retour") && !settingData.get(i).equals("Valider")){
+				 items[i] = new SettingItem(settingData.get(i));
+				 
+				 if(settingData.get(i).equals("Haut")){
+					 items[i].value.setText(configuration.haut.getAttribute("key"));
+				 } else if(settingData.get(i).equals("Bas")){
+					 items[i].value.setText(configuration.bas.getAttribute("key"));
+				 } else if(settingData.get(i).equals("Gauche")){
+					 items[i].value.setText(configuration.gauche.getAttribute("key"));
+				 } else if(settingData.get(i).equals("Droite")){
+					 items[i].value.setText(configuration.droite.getAttribute("key"));
+				 } else if(settingData.get(i).equals("Attaque")){
+					 items[i].value.setText(configuration.attaque.getAttribute("key"));
+				 }
+				 
+				 items[i].setTranslateX(200);		            
+		         
+		         VBox.setMargin(items[i], new Insets(10,1,10,1));
+				 
+				 menuBox.getChildren().add(items[i]);
+			 } else if(settingData.get(i).equals("Retour")){
+				 Civ6MenuItem item = new Civ6MenuItem(settingData.get(i));
+				 item.setTranslateX(200);        
+		         item.setOnMouseClicked(e -> home_menu());
+		         
+		         VBox.setMargin(item, new Insets(10,1,10,1));
 		         
 				 menuBox.getChildren().add(item);
-			 } else {
-				 Civ6MenuItem item = new Civ6MenuItem(data);
+			 } else if(settingData.get(i).equals("Valider")){
+				 Civ6MenuItem item = new Civ6MenuItem(settingData.get(i));
 				 item.setTranslateX(200);        
-				 VBox.setMargin(item, new Insets(10,1,10,1));
-		         item.setOnMouseClicked(e -> home_menu());
-				 menuBox.getChildren().add(item);
-			 }	 
-	     });
+		         item.setOnMouseClicked(e -> configuration.remap(items));
 
+		         VBox.setMargin(item, new Insets(10,1,10,1));
+
+				 menuBox.getChildren().add(item);
+			 }
+		 }
 		 startAnimation();
 	 }
 	 
 	 protected void startAnimation() {
 		 
-		line.setEndY(line.getEndY() + 100);
+		line.setEndY(line.getEndY() + 200);
 		ScaleTransition barre = new ScaleTransition(Duration.seconds(1), line);
 		barre.setToY(1);
 	     
